@@ -40,6 +40,7 @@ cd ~/Sites/Fang/FUNGI
 R
 library(tidyverse)
 library(igraph)
+library(Fang)
 
 ## load
 load("now.FUNGI_booklet.RData")
@@ -196,11 +197,15 @@ ig.BioGRID_genetic
 ```{r, eval=F, echo=T}
 library(tidyverse)
 
-source()
+## load functions
+source("https://github.com/23verse/fungi/raw/master/oRDS.r")
+source("https://github.com/23verse/fungi/raw/master/oRWkernel.r")
+source("https://github.com/23verse/fungi/raw/master/xClassifyPerf.r")
 
+## load datasets
 placeholder <- "https://github.com/23verse/fungi/raw/master"
-ig.BioGRID_genetic <- Fang::oRDS("ig.BioGRID_genetic", placeholder=placeholder)
-org.Hs.egGOMF <- Fang::oRDS("org.Hs.egGOMF", placeholder=placeholder)
+ig.BioGRID_genetic <- oRDS("ig.BioGRID_genetic", placeholder=placeholder)
+org.Hs.egGOMF <- oRDS("org.Hs.egGOMF", placeholder=placeholder)
 ```
 
 
@@ -209,7 +214,7 @@ org.Hs.egGOMF <- Fang::oRDS("org.Hs.egGOMF", placeholder=placeholder)
 ```{r, eval=F, echo=T}
 ## pre-calculate affinity matrix estimated using 2-step short random walk kernel 
 ## on a network of genetic interactions (ig.BioGRID_genetic) 
-df_mat <- Fang::oRWkernel(ig.BioGRID_genetic, steps=2) %>% as.matrix()
+df_mat <- oRWkernel(ig.BioGRID_genetic, steps=2) %>% as.matrix()
 
 ## define known gene annotations for each term
 df_term <- org.Hs.egGOMF$info %>% mutate(ic=-log10(n/max(n))) %>% rename(term=name) %>% filter(n>=5)
@@ -255,7 +260,7 @@ df_term_pred <- df_term %>% inner_join(df_pred, by='term')
 pb <- df_term_pred %>% nrow() %>% progress_estimated()
 df_term_pred %>% mutate(auc=map2_dbl(member, pred, function(x,y){
 	pb$tick()$print()
-	res <- Fang::xClassifyPerf(prediction=y, GSP=x, GSN=NULL, verbose=F)$auroc
+	res <- xClassifyPerf(prediction=y, GSP=x, GSN=NULL, verbose=F)$auroc
 })) -> df_auc
 ```
 

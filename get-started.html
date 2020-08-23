@@ -30,7 +30,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="materials.html"/>
+<link rel="prev" href="r-packages-datasets.html"/>
 <link rel="next" href="session-info.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -105,7 +105,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Overview</a></li>
-<li class="chapter" data-level="2" data-path="materials.html"><a href="materials.html"><i class="fa fa-check"></i><b>2</b> Materials</a></li>
+<li class="chapter" data-level="2" data-path="r-packages-datasets.html"><a href="r-packages-datasets.html"><i class="fa fa-check"></i><b>2</b> R packages &amp; Datasets</a></li>
 <li class="chapter" data-level="3" data-path="get-started.html"><a href="get-started.html"><i class="fa fa-check"></i><b>3</b> Get started</a></li>
 <li class="chapter" data-level="4" data-path="session-info.html"><a href="session-info.html"><i class="fa fa-check"></i><b>4</b> Session Info</a></li>
 <li class="divider"></li>
@@ -131,13 +131,25 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="get-started" class="section level1">
 <h1><span class="header-section-number">Section 3</span> Get started</h1>
 <blockquote>
-<p><strong>Do prediction</strong></p>
+<p><strong>Load packages and datasets</strong></p>
 </blockquote>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tidyverse)
 
-## pre-calculate affinity matrix estimated using 2-step short random walk kernel 
+## load functions
+<span class="kw">source</span>(<span class="st">&quot;https://github.com/23verse/fungi/raw/master/oRDS.r&quot;</span>)
+<span class="kw">source</span>(<span class="st">&quot;https://github.com/23verse/fungi/raw/master/oRWkernel.r&quot;</span>)
+<span class="kw">source</span>(<span class="st">&quot;https://github.com/23verse/fungi/raw/master/xClassifyPerf.r&quot;</span>)
+
+## load datasets
+placeholder &lt;-<span class="st"> &quot;https://github.com/23verse/fungi/raw/master&quot;</span>
+ig.BioGRID_genetic &lt;-<span class="st"> </span><span class="kw">oRDS</span>(<span class="st">&quot;ig.BioGRID_genetic&quot;</span>, <span class="dt">placeholder=</span>placeholder)
+org.Hs.egGOMF &lt;-<span class="st"> </span><span class="kw">oRDS</span>(<span class="st">&quot;org.Hs.egGOMF&quot;</span>, <span class="dt">placeholder=</span>placeholder)</code></pre></div>
+<blockquote>
+<p><strong>Do prediction</strong></p>
+</blockquote>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## pre-calculate affinity matrix estimated using 2-step short random walk kernel 
 ## on a network of genetic interactions (ig.BioGRID_genetic) 
-df_mat &lt;-<span class="st"> </span>Fang<span class="op">::</span><span class="kw">oRWkernel</span>(ig.BioGRID_genetic, <span class="dt">steps=</span><span class="dv">2</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">as.matrix</span>()
+df_mat &lt;-<span class="st"> </span><span class="kw">oRWkernel</span>(ig.BioGRID_genetic, <span class="dt">steps=</span><span class="dv">2</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">as.matrix</span>()
 
 ## define known gene annotations for each term
 df_term &lt;-<span class="st"> </span>org.Hs.egGOMF<span class="op">$</span>info <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">ic=</span><span class="op">-</span><span class="kw">log10</span>(n<span class="op">/</span><span class="kw">max</span>(n))) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">rename</span>(<span class="dt">term=</span>name) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n<span class="op">&gt;=</span><span class="dv">5</span>)
@@ -191,7 +203,7 @@ df_term_pred &lt;-<span class="st"> </span>df_term <span class="op">%&gt;%</span
 pb &lt;-<span class="st"> </span>df_term_pred <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">progress_estimated</span>()
 df_term_pred <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">auc=</span><span class="kw">map2_dbl</span>(member, pred, <span class="cf">function</span>(x,y){
     pb<span class="op">$</span><span class="kw">tick</span>()<span class="op">$</span><span class="kw">print</span>()
-    res &lt;-<span class="st"> </span>Fang<span class="op">::</span><span class="kw">xClassifyPerf</span>(<span class="dt">prediction=</span>y, <span class="dt">GSP=</span>x, <span class="dt">GSN=</span><span class="ot">NULL</span>, <span class="dt">verbose=</span>F)<span class="op">$</span>auroc
+    res &lt;-<span class="st"> </span><span class="kw">xClassifyPerf</span>(<span class="dt">prediction=</span>y, <span class="dt">GSP=</span>x, <span class="dt">GSN=</span><span class="ot">NULL</span>, <span class="dt">verbose=</span>F)<span class="op">$</span>auroc
 })) -&gt;<span class="st"> </span>df_auc</code></pre></div>
 <p>The tibble <code>df_auc</code> contains term-centric performance measured by AUC (the column 'auc').</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_auc
@@ -216,14 +228,14 @@ df_term_pred <span class="op">%&gt;%</span><span class="st"> </span><span class=
 gp1 &lt;-<span class="st"> </span>df_auc <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>namespace, <span class="dt">y=</span>auc, <span class="dt">color=</span>namespace)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_violin</span>() <span class="op">+</span><span class="st"> </span>ggforce<span class="op">::</span><span class="kw">geom_sina</span>(<span class="dt">size=</span><span class="fl">0.1</span>, <span class="dt">alpha=</span><span class="fl">0.5</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme_classic</span>() <span class="op">+</span><span class="st"> </span><span class="kw">guides</span>(<span class="dt">color=</span><span class="st">&#39;none&#39;</span>)
 gp2 &lt;-<span class="st"> </span>df_auc <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x=</span>ic, <span class="dt">y=</span>auc, <span class="dt">color=</span>namespace)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>(<span class="dt">size=</span><span class="fl">0.1</span>) <span class="op">+</span><span class="st"> </span><span class="kw">theme_classic</span>()  <span class="op">+</span><span class="st"> </span><span class="kw">guides</span>(<span class="dt">color=</span><span class="st">&#39;none&#39;</span>)
 (gp1 <span class="op">|</span><span class="st"> </span>gp2) <span class="op">+</span><span class="st"> </span><span class="kw">plot_annotation</span>(<span class="dt">tag_levels=</span><span class="st">&#39;A&#39;</span>)</code></pre></div>
-<p><img src="FUNGI_files/figure-html/unnamed-chunk-11-1.png" width="2100" /></p>
+<p><img src="FUNGI_files/figure-html/unnamed-chunk-12-1.png" width="2100" /></p>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="materials.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="r-packages-datasets.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 <a href="session-info.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>

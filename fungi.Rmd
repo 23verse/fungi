@@ -68,7 +68,10 @@ https://23verse.github.io/fungi
 ## bookdown::render_book + bookdown::gitbook
 cd ~/Sites/SVN/github/fungi
 # delete previous *.html *.png *.css *.js *.ttf *.Rmd files *.yml files
-find ./ -type f -name '*.html' -o -type f -name '*.png' -o -type f -name '*.css' -o -type f -name '*.js' -o -type f -name '*.ttf' -o -type f -name '*.Rmd' -o -type f -name '*.yml' | xargs rm -rf
+find ./ -type f -name '*.html' -o -type f -name '*.png' -o -type f -name '*.css' -o -type f -name '*.js' -o -type f -name '*.ttf' -o -type f -name '*.Rmd' -o -type f -name '*.yml' -o -type f -name '*.RDS' | xargs rm -rf
+# copy ig.BioGRID_genetic.RDS and org.Hs.egGOMF.RDS to ~/Sites/SVN/github/fungi
+cp -rf ~/Sites/SVN/github/bigdata_dev/ig.BioGRID_genetic.RDS ./
+cp -rf ~/Sites/SVN/github/bigdata_dev/org.Hs.egGOMF.RDS ./
 # copy the whole package from ~/Sites/Fang/FUNGI/FUNGIgitbook to ~/Sites/SVN/github/fungi
 cp -rf ~/Sites/Fang/FUNGI/FUNGIgitbook/* ./
 # copy/rename ~/Sites/Fang/FUNGI/now.FUNGI_booklet.Rmd to ~/Sites/SVN/github/fungi/fungi.Rmd
@@ -79,7 +82,7 @@ cp -rf ~/Sites/Fang/FUNGI/now.cover.png ./cover.png
 # add new *.html *.png *.css *.js *.ttf *.Rmd *.yml files
 git status | grep 'modified' | awk '{print $2}' | xargs git add
 git status | grep 'deleted' | awk '{print $2}' | xargs git rm
-find ./ -type f -name '*.html' -o -type f -name '*.png' -o -type f -name '*.css' -o -type f -name '*.js' -o -type f -name '*.ttf' -o -type f -name '*.Rmd' -o -type f -name '*.yml' | xargs git add
+find ./ -type f -name '*.html' -o -type f -name '*.png' -o -type f -name '*.css' -o -type f -name '*.js' -o -type f -name '*.ttf' -o -type f -name '*.Rmd' -o -type f -name '*.yml' -o -type f -name '*.RDS' | xargs git add
 git add --all
 git commit -m 'Update fungi'
 git push origin master
@@ -134,7 +137,7 @@ git push origin master
 As part of `Epistasis: Methods and Protocols`, [Methods in Molecular Biology - Springer](https://www.springer.com/gp/book/9781071609460), we describe three showcases analysing human genetic interactions and/or gene expression data in human tissues ([Materials]), compatible with the concept of tidy data science (FIGURE \@ref(fig:tidy) and FIGURE \@ref(fig:liner)). All done exclusively using the R one-liner, defined as a sequential pipeline of elementary functions chained together achieving a complex task. We will guide the users through step-by-step instructions on ([Case 1]) how to identify, visualise and interpret network modules of genetic interactions; ([Case 2]) how to identify and interpret tissue-specific genetic interactions; and ([Case 3]) how to carry out genetic interaction-based tissue clustering and differential interaction analysis. All three showcases are producible on its own, achieved in relatively short runtime (~20 min for Case 1, ~15 min for Case 2, and ~25 min for Case 3). We encourage the users to run through these showcases before analysing their own datasets.
 
 
-# Materials
+# R packages & Datasets
 
 > **R and packages**
 
@@ -182,11 +185,20 @@ ig.BioGRID_genetic
 
 # Get started
 
-> **Do prediction**
+> **Load packages and datasets**
 
 ```{r, eval=F, echo=T}
 library(tidyverse)
 
+placeholder <- "~/Sites/SVN/github/bigdata_dev/"
+ig.BioGRID_genetic <- Fang::oRDS("ig.BioGRID_genetic", placeholder=placeholder)
+org.Hs.egGOMF <- Fang::oRDS("org.Hs.egGOMF", placeholder=placeholder)
+```
+
+
+> **Do prediction**
+
+```{r, eval=F, echo=T}
 ## pre-calculate affinity matrix estimated using 2-step short random walk kernel 
 ## on a network of genetic interactions (ig.BioGRID_genetic) 
 df_mat <- Fang::oRWkernel(ig.BioGRID_genetic, steps=2) %>% as.matrix()

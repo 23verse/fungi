@@ -4,8 +4,7 @@ classoption: oneside
 title: "Exploring the utility of human genetic interactions for gene function predictions"
 author: |
  | [Hai Fang](mailto:23versify@gmail.com)
- | 
- | University of Oxford 
+date: "`r Sys.Date()`"
 url: 'https\://23verse.github.io/fungi'
 github-repo: "23verse/fungi"
 description: "Function prediction by genetic interactions."
@@ -35,27 +34,25 @@ knitr::opts_chunk$set(fig_cap="yes")
 knitr::opts_chunk$set(eval=F)
 ```
 
-```{r, eval=FALSE, echo=FALSE}
+```{r, eval=F, echo=F}
 cd ~/Sites/Fang/FUNGI
 ################################################
 R
+library(tidyverse)
+library(igraph)
 
 ## load
 load("now.FUNGI_booklet.RData")
 
 placeholder <- "~/Sites/SVN/github/bigdata_dev/"
 ig.BioGRID_genetic <- Fang::oRDS("ig.BioGRID_genetic", placeholder=placeholder)
+org.Hs.egGOMF <- Fang::oRDS("org.Hs.egGOMF", placeholder=placeholder)
 
 ## save
-res <- sapply(ls(), xObjSize, units="Mb")
-items <- setdiff(ls(), c("img","crosslink.customised"))
+res <- sapply(ls(), XGR::xObjSize, units="Mb") %>% sort()
+items <- setdiff(ls(), c("img"))
+items <- c('ig.BioGRID_genetic', 'org.Hs.egGOMF', 'df_pred', 'df_auc')
 save(list=items, file="now.FUNGI_booklet.RData", compress="xz")
-
-# https://bookdown.org/yihui/rmarkdown/html-document.html
-# https://bootswatch.com/3/
-###############
-BiocManager::install(c("bookdown"))
-###############
 
 ## bookdown::render_book + bookdown::gitbook
 ## use configuration in '_output.yml' and '_bookdown.yml'
@@ -143,7 +140,7 @@ As part of `Epistasis: Methods and Protocols`, [Methods in Molecular Biology - S
 
 At the time of writing, the most recent version of R is 4.0.2 (Dark and Stormy Night). The instructions of how to install R in different platforms (Linux, OS X and Windows) can be found at https://www.r-project.org where precompiled binaries are provided for download. For Linux users who do not have a `sudo` privilege, R could be installed from the source code at the home directory (that is, `$HOME`):
 
-```{r, echo=TRUE}
+```{r, eval=F, echo=T}
 wget https://cran.wu.ac.at/src/base/R-4/R-4.0.2.tar.gz
 tar xvfz R-4.0.2.tar.gz
 cd R-4.0.2
@@ -156,7 +153,7 @@ $HOME/R-4.0.2/bin/R # start R
 
 We highly recommend using a dedicated package `BiocManager` to install and update any packages that have been deposited into `Bioconductor` and `CRAN`, two repositories that are exclusive to each other so that a package cannot be deposited into both. `BiocManager` should be installed first in a conventional way (i.e. using the function `install.packages`), and then can be used to install other packages in a single step. Once an additional package `remotes` also installed, `BiocManager` can be also used to install packages hosted at `GitHub`, usually as a development repository prior to submission into `Bioconductor` or `CRAN`.
 
-```{r, echo=TRUE}
+```{r, eval=F, echo=T}
 # first, install the package BiocManager
 install.packages("BiocManager")
 
@@ -172,8 +169,93 @@ BiocManager::install("hfang-bristol/XGR")
 We extracted human genetic interactions from `BioGRID` (version 3.5.179) involving 3102 genes (mapped to NCBI GeneID; the same hereinafter) and their 7856 interactions. This dataset was preprocessed into an `igraph` object (using the `igraph` package), saved as an RData-formatted file `ig.BioGRID_genetic.RData`, deposited at `https://osf.io/gskpn`). 
 
 ```{r, eval=T, echo=T}
+org.Hs.egGOMF
+```
+
+> **Gene annotations by GO Molecular Function terms**
+
+We extracted human genetic interactions from `BioGRID` (version 3.5.179) involving 3102 genes (mapped to NCBI GeneID; the same hereinafter) and their 7856 interactions. This dataset was preprocessed into an `igraph` object (using the `igraph` package), saved as an RData-formatted file `ig.BioGRID_genetic.RData`, deposited at `https://osf.io/gskpn`). 
+
+```{r, eval=T, echo=T}
 ig.BioGRID_genetic
 ```
+
+# Get started
+
+> **Do prediction**
+
+```{r, eval=F, echo=T}
+library(tidyverse)
+
+## pre-calculate affinity matrix estimated using 2-step short random walk kernel 
+## on a network of genetic interactions (ig.BioGRID_genetic) 
+df_mat <- Fang::oRWkernel(ig.BioGRID_genetic, steps=2) %>% as.matrix()
+
+## define known gene annotations for each term
+df_term <- org.Hs.egGOMF$info %>% mutate(ic=-log10(n/max(n))) %>% rename(term=name) %>% filter(n>=5)
+
+## df_pred
+## note: ~2 min runtime using single core (Mac)
+message(sprintf("Start (%s) ...", as.character(Sys.time())), appendLF=T)
+pb <- df_term %>% nrow() %>% progress_estimated()
+df_term %>% select(term, member) %>% mutate(pred=map(member, function(x){
+	pb$tick()$print()
+	y <- df_mat
+	ind <- which(!is.na(match(colnames(y),x)))
+	## force to be 0 for the self of each seed gene
+	diag(y)[ind] <- 0
+	## how many genes used for the average
+	vec <- rep(length(ind), nrow(y))
+	vec[ind] <- length(ind) -1
+	## calculate predictive score
+	if(length(ind)>=5){
+		res <- apply(y[,ind], 1, sum) / vec
+		res %>% enframe(name="gene", value="score") %>% left_join(tibble(gene=x, seed=1), by='gene') %>% arrange(-score)
+	}else{
+		NULL
+	}
+})) %>% filter(map_lgl(pred,~!is.null(.x))) %>% select(term,pred) -> df_pred
+message(sprintf("Finished (%s) ...", as.character(Sys.time())), appendLF=T)
+
+## also append a list-column storing seed genes per term
+df_pred <- df_pred %>% mutate(seed=map(pred, ~.x %>% filter(!is.na(seed)) %>% pull(gene)))
+```
+
+Gene-centric predictive score for each term is stored in a tibble `df_pred`, with 3 columns including 'term', 'pred' (a list-column containing details on gene-centric predictive score including 3 columns 'gene', 'score' for predictive score and 'seed' indicating whether or a seed gene), and 'seed' (seed genes).
+
+```{r, eval=T, echo=T}
+df_pred
+```
+
+> **Evaluate prediction performance**
+
+```{r, eval=F, echo=T}
+## df_auc
+df_term_pred <- df_term %>% inner_join(df_pred, by='term')
+pb <- df_term_pred %>% nrow() %>% progress_estimated()
+df_term_pred %>% mutate(auc=map2_dbl(member, pred, function(x,y){
+	pb$tick()$print()
+	res <- Fang::xClassifyPerf(prediction=y, GSP=x, GSN=NULL, verbose=F)$auroc
+})) -> df_auc
+```
+
+The tibble `df_auc` contains term-centric performance measured by AUC (the column 'auc').
+
+```{r, eval=T, echo=T}
+df_auc
+```
+
+Visualise term-specific AUC (see `A`), further stratified by information content of terms (see `B`).
+
+```{r, eval=T, echo=T}
+library(patchwork)
+library(ggforce)
+
+gp1 <- df_auc %>% ggplot(aes(x=namespace, y=auc, color=namespace)) + geom_violin() + ggforce::geom_sina(size=0.1, alpha=0.5) + theme_classic() + guides(color='none')
+gp2 <- df_auc %>% ggplot(aes(x=ic, y=auc, color=namespace)) + geom_point(size=0.1) + theme_classic()  + guides(color='none')
+(gp1 | gp2) + plot_annotation(tag_levels='A')
+```
+
 
 # Session Info
 

@@ -23,6 +23,7 @@
 
 
 
+<meta name="date" content="2020-08-23" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -30,7 +31,7 @@
   
   
 <link rel="prev" href="index.html"/>
-<link rel="next" href="session-info.html"/>
+<link rel="next" href="get-started.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -105,7 +106,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Overview</a></li>
 <li class="chapter" data-level="2" data-path="materials.html"><a href="materials.html"><i class="fa fa-check"></i><b>2</b> Materials</a></li>
-<li class="chapter" data-level="3" data-path="session-info.html"><a href="session-info.html"><i class="fa fa-check"></i><b>3</b> Session Info</a></li>
+<li class="chapter" data-level="3" data-path="get-started.html"><a href="get-started.html"><i class="fa fa-check"></i><b>3</b> Get started</a></li>
+<li class="chapter" data-level="4" data-path="session-info.html"><a href="session-info.html"><i class="fa fa-check"></i><b>4</b> Session Info</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="_blank">Published with bookdown</a></li>
 
@@ -153,6 +155,32 @@ BiocManager<span class="op">::</span><span class="kw">install</span>(<span class
 <p><strong>Genetic interactions</strong></p>
 </blockquote>
 <p>We extracted human genetic interactions from <code>BioGRID</code> (version 3.5.179) involving 3102 genes (mapped to NCBI GeneID; the same hereinafter) and their 7856 interactions. This dataset was preprocessed into an <code>igraph</code> object (using the <code>igraph</code> package), saved as an RData-formatted file <code>ig.BioGRID_genetic.RData</code>, deposited at <code>https://osf.io/gskpn</code>).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">org.Hs.egGOMF
+## $info
+## # A tibble: 4,156 x 6
+##    name                     id        namespace       distance member          n
+##    &lt;chr&gt;                    &lt;chr&gt;     &lt;chr&gt;              &lt;dbl&gt; &lt;list&gt;      &lt;dbl&gt;
+##  1 molecular_function       GO:00036… Molecular Func…        0 &lt;chr [16,3… 16335
+##  2 binding                  GO:00054… Molecular Func…        1 &lt;chr [13,4… 13424
+##  3 catalytic activity       GO:00038… Molecular Func…        1 &lt;chr [4,87…  4870
+##  4 transcription regulator… GO:01401… Molecular Func…        1 &lt;chr [1,59…  1596
+##  5 molecular function regu… GO:00987… Molecular Func…        1 &lt;chr [1,45…  1451
+##  6 molecular transducer ac… GO:00600… Molecular Func…        1 &lt;chr [1,27…  1274
+##  7 transporter activity     GO:00052… Molecular Func…        1 &lt;chr [1,01…  1010
+##  8 structural molecule act… GO:00051… Molecular Func…        1 &lt;chr [548]&gt;   548
+##  9 translation regulator a… GO:00451… Molecular Func…        1 &lt;chr [121]&gt;   121
+## 10 antioxidant activity     GO:00162… Molecular Func…        1 &lt;chr [75]&gt;     75
+## # … with 4,146 more rows
+## 
+## $stamp
+## [1] &quot;2020-05-18&quot;
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;SET&quot;</code></pre></div>
+<blockquote>
+<p><strong>Gene annotations by GO Molecular Function terms</strong></p>
+</blockquote>
+<p>We extracted human genetic interactions from <code>BioGRID</code> (version 3.5.179) involving 3102 genes (mapped to NCBI GeneID; the same hereinafter) and their 7856 interactions. This dataset was preprocessed into an <code>igraph</code> object (using the <code>igraph</code> package), saved as an RData-formatted file <code>ig.BioGRID_genetic.RData</code>, deposited at <code>https://osf.io/gskpn</code>).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ig.BioGRID_genetic
 ## IGRAPH 56d837e UN-- 3198 7968 -- 
 ## + attr: stamp (g/n), name (v/c), description (v/c), nPMID (e/n)
@@ -173,7 +201,7 @@ BiocManager<span class="op">::</span><span class="kw">install</span>(<span class
         </div>
       </div>
 <a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="session-info.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="get-started.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

@@ -1,0 +1,185 @@
+---
+documentclass: book
+classoption: oneside
+title: "Exploring the utility of human genetic interactions for gene function predictions"
+author: |
+ | [Hai Fang](mailto:23versify@gmail.com)
+ | 
+ | University of Oxford 
+url: 'https\://23verse.github.io/fungi'
+github-repo: "23verse/fungi"
+description: "Function prediction by genetic interactions."
+vignette: >
+ %\VignetteIndexEntry{fungi Booklet}
+ %\VignetteEngine{knitr::rmarkdown}
+ %\VignetteEncoding{UTF-8}
+output: 
+  BiocStyle::html_document:
+        toc: true
+        toc_depth: 3
+        number_sections: true
+        theme: journal
+        highlight: monochrome
+        toc_float: true
+        code_folding: hide
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(collapse=TRUE, comment="##")
+knitr::opts_chunk$set(dpi=300)
+knitr::opts_chunk$set(cache=FALSE)
+knitr::opts_chunk$set(echo=TRUE)
+knitr::opts_chunk$set(warning=FALSE)
+knitr::opts_chunk$set(message=FALSE)
+knitr::opts_chunk$set(fig_cap="yes")
+knitr::opts_chunk$set(eval=F)
+```
+
+```{r, eval=FALSE, echo=FALSE}
+cd ~/Sites/Fang/FUNGI
+################################################
+R
+
+## load
+load("now.FUNGI_booklet.RData")
+
+placeholder <- "~/Sites/SVN/github/bigdata_dev/"
+ig.BioGRID_genetic <- Fang::oRDS("ig.BioGRID_genetic", placeholder=placeholder)
+
+## save
+res <- sapply(ls(), xObjSize, units="Mb")
+items <- setdiff(ls(), c("img","crosslink.customised"))
+save(list=items, file="now.FUNGI_booklet.RData", compress="xz")
+
+# https://bookdown.org/yihui/rmarkdown/html-document.html
+# https://bootswatch.com/3/
+###############
+BiocManager::install(c("bookdown"))
+###############
+
+## bookdown::render_book + bookdown::gitbook
+## use configuration in '_output.yml' and '_bookdown.yml'
+bookdown::render_book("now.FUNGI_booklet.Rmd", c("bookdown::gitbook","bookdown::pdf_book","bookdown::tufte_html_book")[1])
+
+q('no')
+
+################################################
+
+##########################
+https://23verse.github.io/fungi
+##########################
+## bookdown::render_book + bookdown::gitbook
+cd ~/Sites/SVN/github/fungi
+# delete previous *.html *.png *.css *.js *.ttf *.Rmd files *.yml files
+find ./ -type f -name '*.html' -o -type f -name '*.png' -o -type f -name '*.css' -o -type f -name '*.js' -o -type f -name '*.ttf' -o -type f -name '*.Rmd' -o -type f -name '*.yml' | xargs rm -rf
+# copy the whole package from ~/Sites/Fang/FUNGI/FUNGIgitbook to ~/Sites/SVN/github/fungi
+cp -rf ~/Sites/Fang/FUNGI/FUNGIgitbook/* ./
+# copy/rename ~/Sites/Fang/FUNGI/now.FUNGI_booklet.Rmd to ~/Sites/SVN/github/fungi/fungi.Rmd
+cp -rf ~/Sites/Fang/FUNGI/now.FUNGI_booklet.Rmd ./fungi.Rmd
+cp -rf ~/Sites/Fang/FUNGI/_bookdown.yml ./_bookdown.yml
+cp -rf ~/Sites/Fang/FUNGI/_output.yml ./_output.yml
+cp -rf ~/Sites/Fang/FUNGI/now.cover.png ./cover.png
+# add new *.html *.png *.css *.js *.ttf *.Rmd *.yml files
+git status | grep 'modified' | awk '{print $2}' | xargs git add
+git status | grep 'deleted' | awk '{print $2}' | xargs git rm
+find ./ -type f -name '*.html' -o -type f -name '*.png' -o -type f -name '*.css' -o -type f -name '*.js' -o -type f -name '*.ttf' -o -type f -name '*.Rmd' -o -type f -name '*.yml' | xargs git add
+git add --all
+git commit -m 'Update fungi'
+git push origin master
+##########################
+
+cd ~/Sites/XGR/MIMB/Submission/Accept
+/System/Library/Automator/Combine\ PDF\ Pages.action/Contents/Resources/join.py -o fungi_Figures.pdf Figure1.ai Figure2.ai Figure3.ai Figure4.ai Figure5.ai Figure6.ai Figure7.ai Figure8.ai Figure9.ai Figure10.ai
+
+####################################################
+## GitHub Pages
+
+One site per account but unlimited projects can be created from https://pages.github.com:
+
+> **One site `https://github.com/23verse/23verse.github.io`**
+
+# visit https://github.com/new (enter "23verse.github.io" -> Initialize this repository with a README)
+# clone into the local machine 
+cd ~/Sites/SVN/github
+git clone git@github.com:23verse/23verse.github.io
+cd ~/Sites/SVN/github/23verse.github.io
+git pull origin master
+## https://github.com/23verse/23verse.github.io/settings/access: add "hfang-bristol"
+echo "Hello 23verse" > index.html
+git add --all
+git commit -m 'Initial commit'
+git push origin master
+
+# Alive (https://23verse.github.io)
+
+> **A project `https://github.com/23verse/fungi`**
+
+# visit https://github.com/new (enter "fungi" -> Initialize this repository with a README)
+## https://github.com/23verse/fungi/settings/access: add "hfang-bristol"
+# clone into the local machine 
+cd ~/Sites/SVN/github
+git clone git@github.com:23verse/fungi.git
+cd ~/Sites/SVN/github/fungi
+git pull origin master
+echo "Hello fungi" > index.html
+git add --all
+git commit -m 'Initial commit'
+git push origin master
+# visit https://github.com/23verse/fungi/settings -> GitHub Pages (master branch)
+
+# Alive (https://23verse.github.io/fungi): Function prediction by genetic interactions
+####################################################
+
+```
+
+# Overview {#index}
+
+As part of `Epistasis: Methods and Protocols`, [Methods in Molecular Biology - Springer](https://www.springer.com/gp/book/9781071609460), we describe three showcases analysing human genetic interactions and/or gene expression data in human tissues ([Materials]), compatible with the concept of tidy data science (FIGURE \@ref(fig:tidy) and FIGURE \@ref(fig:liner)). All done exclusively using the R one-liner, defined as a sequential pipeline of elementary functions chained together achieving a complex task. We will guide the users through step-by-step instructions on ([Case 1]) how to identify, visualise and interpret network modules of genetic interactions; ([Case 2]) how to identify and interpret tissue-specific genetic interactions; and ([Case 3]) how to carry out genetic interaction-based tissue clustering and differential interaction analysis. All three showcases are producible on its own, achieved in relatively short runtime (~20 min for Case 1, ~15 min for Case 2, and ~25 min for Case 3). We encourage the users to run through these showcases before analysing their own datasets.
+
+
+# Materials
+
+> **R and packages**
+
+At the time of writing, the most recent version of R is 4.0.2 (Dark and Stormy Night). The instructions of how to install R in different platforms (Linux, OS X and Windows) can be found at https://www.r-project.org where precompiled binaries are provided for download. For Linux users who do not have a `sudo` privilege, R could be installed from the source code at the home directory (that is, `$HOME`):
+
+```{r, echo=TRUE}
+wget https://cran.wu.ac.at/src/base/R-4/R-4.0.2.tar.gz
+tar xvfz R-4.0.2.tar.gz
+cd R-4.0.2
+./configure --prefix=$HOME/R-4.0.2
+make
+make check
+make install
+$HOME/R-4.0.2/bin/R # start R
+```
+
+We highly recommend using a dedicated package `BiocManager` to install and update any packages that have been deposited into `Bioconductor` and `CRAN`, two repositories that are exclusive to each other so that a package cannot be deposited into both. `BiocManager` should be installed first in a conventional way (i.e. using the function `install.packages`), and then can be used to install other packages in a single step. Once an additional package `remotes` also installed, `BiocManager` can be also used to install packages hosted at `GitHub`, usually as a development repository prior to submission into `Bioconductor` or `CRAN`.
+
+```{r, echo=TRUE}
+# first, install the package BiocManager
+install.packages("BiocManager")
+
+# then install packages from Bioconductor and CRAN
+BiocManager::install(c("biobroom","dnet","ggrepel","gridExtra","limma","patchwork","remotes","tidyverse","osfr"), dependencies=T)
+
+# can also install packages from GitHub
+BiocManager::install("hfang-bristol/XGR")
+```
+
+> **Genetic interactions**
+
+We extracted human genetic interactions from `BioGRID` (version 3.5.179) involving 3102 genes (mapped to NCBI GeneID; the same hereinafter) and their 7856 interactions. This dataset was preprocessed into an `igraph` object (using the `igraph` package), saved as an RData-formatted file `ig.BioGRID_genetic.RData`, deposited at `https://osf.io/gskpn`). 
+
+```{r, eval=T, echo=T}
+ig.BioGRID_genetic
+```
+
+# Session Info
+
+```{r sessionInfo, echo=F, eval=T}
+library(magrittr)
+library(dplyr)
+XGR::xAuxSI() %>% dplyr::mutate(title=stringr::str_squish(title)) %>% select(c(2,3,4)) %>% knitr::kable(caption="Session info on R, OS, and attached/loaded packages", row.names=F)
+#sessionInfo()
+```

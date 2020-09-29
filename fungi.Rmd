@@ -131,7 +131,7 @@ git commit -m 'Initial commit'
 git push origin master
 # visit https://github.com/23verse/fungi/settings -> GitHub Pages (master branch)
 
-# Alive (https://23verse.github.io/fungi): Function prediction by genetic interactions
+# Alive (https://23verse.github.io/fungi): Function predictions by genetic interactions
 ####################################################
 
 ```

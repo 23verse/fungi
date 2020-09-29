@@ -95,9 +95,6 @@ git commit -m 'Update fungi'
 git push origin master
 ##########################
 
-cd ~/Sites/XGR/MIMB/Submission/Accept
-/System/Library/Automator/Combine\ PDF\ Pages.action/Contents/Resources/join.py -o fungi_Figures.pdf Figure1.ai Figure2.ai Figure3.ai Figure4.ai Figure5.ai Figure6.ai Figure7.ai Figure8.ai Figure9.ai Figure10.ai
-
 ####################################################
 ## GitHub Pages
 
@@ -141,8 +138,7 @@ git push origin master
 
 # Overview {#index}
 
-As part of `Epistasis: Methods and Protocols`, [Methods in Molecular Biology - Springer](https://www.springer.com/gp/book/9781071609460), we describe three showcases analysing human genetic interactions and/or gene expression data in human tissues ([Materials]), compatible with the concept of tidy data science (FIGURE \@ref(fig:tidy) and FIGURE \@ref(fig:liner)). All done exclusively using the R one-liner, defined as a sequential pipeline of elementary functions chained together achieving a complex task. We will guide the users through step-by-step instructions on ([Case 1]) how to identify, visualise and interpret network modules of genetic interactions; ([Case 2]) how to identify and interpret tissue-specific genetic interactions; and ([Case 3]) how to carry out genetic interaction-based tissue clustering and differential interaction analysis. All three showcases are producible on its own, achieved in relatively short runtime (~20 min for Case 1, ~15 min for Case 2, and ~25 min for Case 3). We encourage the users to run through these showcases before analysing their own datasets.
-
+Human genetic interactions can be useful in a variety of contexts, as highlighted by computational predictions of gene functions. Leveraging the informativeness of such interactions however is not satisfactorily addressed. Here I introduce a new scoring metric `evaluation-prediction score` to meet this demand. This metric incorporates local network information building on short random walk and the leave-one-out strategy. Applying this metric to the status quo genetic interactions in humans (also the physical interactions of the same source) reveals that although physical interactions are most informative based on direct neighbors (1-step), genetic interactions should be best leveraged considering 2-step network influential range. In this website, I will guide the users through step-by-step instructions on how to do so ([Get started]). I encourage the users to run through this before extending to their own applications.
 
 # R packages & Datasets
 
@@ -161,30 +157,27 @@ make install
 $HOME/R-4.0.2/bin/R # start R
 ```
 
-We highly recommend using a dedicated package `BiocManager` to install and update any packages that have been deposited into `Bioconductor` and `CRAN`, two repositories that are exclusive to each other so that a package cannot be deposited into both. `BiocManager` should be installed first in a conventional way (i.e. using the function `install.packages`), and then can be used to install other packages in a single step. Once an additional package `remotes` also installed, `BiocManager` can be also used to install packages hosted at `GitHub`, usually as a development repository prior to submission into `Bioconductor` or `CRAN`.
+I highly recommend using a dedicated package `BiocManager` to install and update any packages that have been deposited into `Bioconductor` and `CRAN`, two repositories that are exclusive to each other so that a package cannot be deposited into both. `BiocManager` should be installed first in a conventional way (i.e. using the function `install.packages`), and then can be used to install other packages in a single step.
 
 ```{r, eval=F, echo=T}
 # first, install the package BiocManager
 install.packages("BiocManager")
 
 # then install packages from Bioconductor and CRAN
-BiocManager::install(c("biobroom","dnet","ggrepel","gridExtra","limma","patchwork","remotes","tidyverse","osfr"), dependencies=T)
-
-# can also install packages from GitHub
-BiocManager::install("hfang-bristol/XGR")
+BiocManager::install(c("igraph","tidyverse","patchwork","ggforce"), dependencies=T)
 ```
 
-> **Genetic interactions**
+> **Gene annotations by GO Molecular Function terms**
 
-We extracted human genetic interactions from `BioGRID` (version 3.5.179) involving 3102 genes (mapped to NCBI GeneID; the same hereinafter) and their 7856 interactions. This dataset was preprocessed into an `igraph` object (using the `igraph` package), saved as an RData-formatted file `ig.BioGRID_genetic.RData`, deposited at `https://osf.io/gskpn`). 
+GO annotations for human genes were sourced from NCBI (the gene2go.gz file). According to the true-path rule, these annotations were also propagated to ancestor terms. This dataset was preprocessed into an `SET` object, saved as an RDS-formatted file `org.Hs.egGOMF.RDS`, available at `https://github.com/23verse/fungi`). 
 
 ```{r, eval=T, echo=T}
 org.Hs.egGOMF
 ```
 
-> **Gene annotations by GO Molecular Function terms**
+> **Genetic interactions**
 
-We extracted human genetic interactions from `BioGRID` (version 3.5.179) involving 3102 genes (mapped to NCBI GeneID; the same hereinafter) and their 7856 interactions. This dataset was preprocessed into an `igraph` object (using the `igraph` package), saved as an RData-formatted file `ig.BioGRID_genetic.RData`, deposited at `https://osf.io/gskpn`). 
+Human genetic interactions were obtained from BioGRID (version 3.5.185) [7], with ~3,200 genes (mapped to NCBI Entrez GeneID) and ~8,000 interactions (stored as an igraph object). This dataset was preprocessed into an `igraph` object (using the `igraph` package), saved as an RDS file `ig.BioGRID_genetic.RDS`, available at `https://github.com/23verse/fungi`). 
 
 ```{r, eval=T, echo=T}
 ig.BioGRID_genetic

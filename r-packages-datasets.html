@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2020-08-23" />
+<meta name="date" content="2020-09-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -142,19 +142,16 @@ make
 make check
 make install
 <span class="op">$</span>HOME<span class="op">/</span>R<span class="op">-</span><span class="fl">4.0</span>.<span class="dv">2</span><span class="op">/</span>bin<span class="op">/</span>R <span class="co"># start R</span></code></pre></div>
-<p>We highly recommend using a dedicated package <code>BiocManager</code> to install and update any packages that have been deposited into <code>Bioconductor</code> and <code>CRAN</code>, two repositories that are exclusive to each other so that a package cannot be deposited into both. <code>BiocManager</code> should be installed first in a conventional way (i.e. using the function <code>install.packages</code>), and then can be used to install other packages in a single step. Once an additional package <code>remotes</code> also installed, <code>BiocManager</code> can be also used to install packages hosted at <code>GitHub</code>, usually as a development repository prior to submission into <code>Bioconductor</code> or <code>CRAN</code>.</p>
+<p>I highly recommend using a dedicated package <code>BiocManager</code> to install and update any packages that have been deposited into <code>Bioconductor</code> and <code>CRAN</code>, two repositories that are exclusive to each other so that a package cannot be deposited into both. <code>BiocManager</code> should be installed first in a conventional way (i.e. using the function <code>install.packages</code>), and then can be used to install other packages in a single step.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># first, install the package BiocManager</span>
 <span class="kw">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)
 
 <span class="co"># then install packages from Bioconductor and CRAN</span>
-BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="kw">c</span>(<span class="st">&quot;biobroom&quot;</span>,<span class="st">&quot;dnet&quot;</span>,<span class="st">&quot;ggrepel&quot;</span>,<span class="st">&quot;gridExtra&quot;</span>,<span class="st">&quot;limma&quot;</span>,<span class="st">&quot;patchwork&quot;</span>,<span class="st">&quot;remotes&quot;</span>,<span class="st">&quot;tidyverse&quot;</span>,<span class="st">&quot;osfr&quot;</span>), <span class="dt">dependencies=</span>T)
-
-<span class="co"># can also install packages from GitHub</span>
-BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;hfang-bristol/XGR&quot;</span>)</code></pre></div>
+BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="kw">c</span>(<span class="st">&quot;igraph&quot;</span>,<span class="st">&quot;tidyverse&quot;</span>,<span class="st">&quot;patchwork&quot;</span>,<span class="st">&quot;ggforce&quot;</span>), <span class="dt">dependencies=</span>T)</code></pre></div>
 <blockquote>
-<p><strong>Genetic interactions</strong></p>
+<p><strong>Gene annotations by GO Molecular Function terms</strong></p>
 </blockquote>
-<p>We extracted human genetic interactions from <code>BioGRID</code> (version 3.5.179) involving 3102 genes (mapped to NCBI GeneID; the same hereinafter) and their 7856 interactions. This dataset was preprocessed into an <code>igraph</code> object (using the <code>igraph</code> package), saved as an RData-formatted file <code>ig.BioGRID_genetic.RData</code>, deposited at <code>https://osf.io/gskpn</code>).</p>
+<p>GO annotations for human genes were sourced from NCBI (the gene2go.gz file). According to the true-path rule, these annotations were also propagated to ancestor terms. This dataset was preprocessed into an <code>SET</code> object, saved as an RDS-formatted file <code>org.Hs.egGOMF.RDS</code>, available at <code>https://github.com/23verse/fungi</code>).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">org.Hs.egGOMF
 ## An object of S3 class &#39;SET&#39;, with 2 components:
 ##   $info: a tibble of 4156 rows X 6 columns
@@ -172,9 +169,9 @@ BiocManager<span class="op">::</span><span class="kw">install</span>(<span class
 ## 5 molecular function regul… GO:00987… Molecular Func…        1 &lt;chr [1,45…  1451
 ## # … with 4,151 more rows</code></pre></div>
 <blockquote>
-<p><strong>Gene annotations by GO Molecular Function terms</strong></p>
+<p><strong>Genetic interactions</strong></p>
 </blockquote>
-<p>We extracted human genetic interactions from <code>BioGRID</code> (version 3.5.179) involving 3102 genes (mapped to NCBI GeneID; the same hereinafter) and their 7856 interactions. This dataset was preprocessed into an <code>igraph</code> object (using the <code>igraph</code> package), saved as an RData-formatted file <code>ig.BioGRID_genetic.RData</code>, deposited at <code>https://osf.io/gskpn</code>).</p>
+<p>Human genetic interactions were obtained from BioGRID (version 3.5.185) [7], with ~3,200 genes (mapped to NCBI Entrez GeneID) and ~8,000 interactions (stored as an igraph object). This dataset was preprocessed into an <code>igraph</code> object (using the <code>igraph</code> package), saved as an RDS file <code>ig.BioGRID_genetic.RDS</code>, available at <code>https://github.com/23verse/fungi</code>).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ig.BioGRID_genetic
 ## IGRAPH 56d837e UN-- 3198 7968 -- 
 ## + attr: stamp (g/n), name (v/c), description (v/c), nPMID (e/n)

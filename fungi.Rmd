@@ -3,7 +3,7 @@ documentclass: book
 classoption: oneside
 title: "Exploring the utility of human genetic interactions for gene function predictions"
 author: |
- | [Hai Fang](mailto:23versify@gmail.com)
+ | [Hai Fang](mailto:fh12355@rjh.com.cn)
 date: "`r Sys.Date()`"
 url: 'https\://23verse.github.io/fungi'
 github-repo: "23verse/fungi"
@@ -138,7 +138,7 @@ git push origin master
 
 # Overview {#index}
 
-Human genetic interactions can be useful in a variety of contexts, as highlighted by computational predictions of gene functions. Leveraging the informativeness of such interactions however is not satisfactorily addressed. Here I introduce a new scoring metric `evaluation-prediction score` to meet this demand. This metric incorporates local network information building on short random walk and the leave-one-out strategy. Applying this metric to the status quo genetic interactions in humans (also the physical interactions of the same source) reveals that although physical interactions are most informative based on direct neighbors (1-step), genetic interactions should be best leveraged considering 2-step network influential range. In this website, I will guide the users through step-by-step instructions on how to do so ([Get started]). I encourage the users to run through this before extending to their own applications.
+Human genetic interactions can be utilised in a variety of contexts, including computational predictions of gene functions using Gene Ontology (GO) terms. Leveraging the informativeness of such interactions however is not satisfactorily addressed. Here I introduce a new scoring metric `evaluation-prediction score` to meet this demand. This metric incorporates local network information building on short random walk. Applying this metric to the status quo genetic interactions in humans (also the physical interactions of the same source) reveals that although physical interactions are most informative based on direct neighbors (1-step), genetic interactions should be best leveraged considering 2-step network influential range. In this website, I will guide the users through step-by-step instructions on how to do so ([Get started]). I encourage the users to run through this before extending to their own applications.
 
 # R packages & Datasets
 
